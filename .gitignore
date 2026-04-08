@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+build/*.icns   # generated locally by make-icns.sh
+
+# Electron builder cache
+.cache/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# App user data (contains your API keys — never commit this)
+# Stored at ~/Library/Application Support/dictation-ai/settings.json
+# NOT in the project folder, but exclude just in case
+settings.json
+*.env
+.env*
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,356 @@
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RECORDER WINDOW
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.recorder {
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+}
+
+#pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(18, 18, 22, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 20px;
+  padding: 16px 20px;
+  min-height: 80px;
+  max-height: 180px;
+  width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.4);
+  /* Drag the whole pill to reposition */
+  -webkit-app-region: drag;
+  animation: pill-in 0.22s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@keyframes pill-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* Interactive children must opt OUT of drag region */
+#icon-area, #text-area, #wave, #btn-settings {
+  -webkit-app-region: no-drag;
+}
+
+/* ── Icon area ─────────────────────────────────────────────────────────── */
+#icon-area {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.icon-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  color: #888;
+}
+
+.icon-state.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.icon-state svg { width: 28px; height: 28px; }
+
+/* Idle mic */
+#icon-idle.active   { color: #666; }
+
+/* Recording: pulsing red dot */
+#icon-recording     { color: #ff4444; }
+.pulse-ring {
+  position: absolute;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ff4444;
+  animation: pulse-ring 1.2s ease-out infinite;
+}
+.rec-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #ff4444;
+  animation: rec-breathe 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+@keyframes rec-breathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+
+/* Processing: spinner */
+#icon-processing { color: #5b8dee; }
+.spinner {
+  width: 26px; height: 26px;
+  border: 2.5px solid rgba(91,141,238,0.25);
+  border-top-color: #5b8dee;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Done: green check */
+#icon-done.active  { color: #4ade80; }
+
+/* Error: red X */
+#icon-error.active { color: #f87171; }
+
+/* ── Text area ─────────────────────────────────────────────────────────── */
+#text-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#preview {
+  font-size: 11.5px;
+  color: #999;
+  line-height: 1.5;
+  max-height: 80px;
+  overflow-y: auto;
+  word-break: break-word;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+/* Bright text while recording so live transcript is readable */
+body.recording #preview {
+  color: #e8e8e8;
+}
+
+/* ── Waveform ──────────────────────────────────────────────────────────── */
+/* ── Settings gear button ──────────────────────────────────────────────── */
+#btn-settings {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.22);
+  transition: color 0.2s;
+  align-self: flex-start;
+  margin-top: 1px;
+}
+#btn-settings:hover { color: rgba(255,255,255,0.7); }
+#btn-settings svg   { width: 16px; height: 16px; display: block; }
+
+#wave {
+  display: none;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS WINDOW
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.settings {
+  background: #1a1a1f;
+  color: #e0e0e0;
+  font-size: 13px;
+  overflow: auto;
+}
+
+.settings-root {
+  padding: 70px 28px 32px;
+  max-width: 560px;
+}
+
+/* Header */
+.settings-header {
+  margin-bottom: 28px;
+}
+.settings-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.settings-header h1 svg { flex-shrink: 0; }
+.settings-header p { font-size: 12px; color: #666; margin-top: 4px; }
+
+/* Section card */
+.section {
+  background: #22222b;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #555;
+  padding: 12px 16px 8px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.field:first-of-type { border-top: none; }
+
+.field label {
+  flex: 0 0 160px;
+  color: #b0b0b0;
+  font-size: 12.5px;
+}
+
+.field-input { flex: 1; min-width: 0; }
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  background: #2c2c36;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 12.5px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #5b8dee;
+}
+textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+select option { background: #2c2c36; }
+
+/* Toggle switch */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.toggle {
+  position: relative;
+  width: 36px; height: 20px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #444;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  left: 2px; top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: #5b8dee; }
+.toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+.toggle-label { font-size: 12px; color: #888; }
+
+/* Buttons */
+.btn-row { display: flex; gap: 8px; padding: 16px; border-top: 1px solid rgba(255,255,255,0.07); }
+
+.btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: #5b8dee;
+  color: #fff;
+}
+.btn-primary:hover { background: #4a7de0; }
+
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+  color: #ccc;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.13); }
+
+/* Status toast */
+#save-status {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  display: none;
+  align-items: center;
+}
+#save-status.ok    { background: rgba(74,222,128,0.15); color: #4ade80; display: flex; }
+#save-status.error { background: rgba(248,113,113,0.15); color: #f87171; display: flex; }
+
+/* API key reveal button */
+.key-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.key-wrap input { flex: 1; }
+.key-reveal {
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  color: #888;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.key-reveal:hover { background: rgba(255,255,255,0.12); }

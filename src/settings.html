@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Dictation AI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="settings">
+<div class="settings-root">
+
+  <div class="settings-header">
+    <h1>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5b8dee" stroke-width="2" stroke-linecap="round"><rect x="7" y="2" width="10" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+      Dictation AI
+    </h1>
+    <p>Configure your API keys, hotkey, and AI behaviour.</p>
+  </div>
+
+  <!-- Transcription -->
+  <div class="section">
+    <div class="section-title">Transcription (Speech → Text)</div>
+
+    <div class="field">
+      <label>Provider</label>
+      <div class="field-input">
+        <select id="transcriptionProvider">
+          <option value="groq">Groq — Whisper large-v3 (free tier, fast)</option>
+          <option value="openai">OpenAI — Whisper v2 ($0.006/min)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field" id="field-groq">
+      <label>Groq API Key</label>
+      <div class="field-input">
+        <div class="key-wrap">
+          <input type="password" id="groqApiKey" placeholder="gsk_…" autocomplete="off">
+          <button class="key-reveal" onclick="toggleReveal('groqApiKey', this)">Show</button>
+        </div>
+        <p style="font-size:11px;color:#555;margin-top:4px;">Free at <a href="https://console.groq.com" style="color:#5b8dee;" target="_blank">console.groq.com</a></p>
+      </div>
+    </div>
+
+    <div class="field" id="field-openai" style="display:none">
+      <label>OpenAI API Key</label>
+      <div class="field-input">
+        <div class="key-wrap">
+          <input type="password" id="openaiApiKey" placeholder="sk-…" autocomplete="off">
+          <button class="key-reveal" onclick="toggleReveal('openaiApiKey', this)">Show</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Language</label>
+      <div class="field-input">
+        <select id="language">
+          <option value="">Auto-detect</option>
+          <option value="en">English</option>
+          <option value="zh">Chinese</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="pt">Portuguese</option>
+          <option value="ar">Arabic</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Enhancement -->
+  <div class="section">
+    <div class="section-title">AI Enhancement (xAI Grok)</div>
+
+    <div class="field">
+      <label>xAI API Key</label>
+      <div class="field-input">
+        <div class="key-wrap">
+          <input type="password" id="xaiApiKey" placeholder="xai-…" autocomplete="off">
+          <button class="key-reveal" onclick="toggleReveal('xaiApiKey', this)">Show</button>
+        </div>
+        <p style="font-size:11px;color:#555;margin-top:4px;">Get one at <a href="https://console.x.ai" style="color:#5b8dee;" target="_blank">console.x.ai</a></p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Grok Model</label>
+      <div class="field-input">
+        <select id="xaiModel">
+          <option value="grok-3-mini">grok-3-mini (fast, cheap)</option>
+          <option value="grok-3">grok-3 (best quality)</option>
+          <option value="grok-2">grok-2</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Enable Enhancement</label>
+      <div class="field-input">
+        <label class="toggle">
+          <input type="checkbox" id="enhancementEnabled">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="field" style="align-items:flex-start">
+      <label style="padding-top:6px">Cleanup Prompt</label>
+      <div class="field-input">
+        <textarea id="enhancementPrompt" rows="3" placeholder="Instructions for Grok text cleanup…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hotkey & Behaviour -->
+  <div class="section">
+    <div class="section-title">Hotkey &amp; Behaviour</div>
+
+    <div class="field">
+      <label>Recording Mode</label>
+      <div class="field-input">
+        <select id="recordingMode" onchange="onModeChange()">
+          <option value="toggle">Toggle — press once to start, again to stop</option>
+          <option value="hold">Hold to talk — hold key while speaking (like Willow)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Toggle mode: hotkey string -->
+    <div class="field" id="field-hotkey">
+      <label>Toggle Hotkey</label>
+      <div class="field-input">
+        <input type="text" id="hotkey" placeholder="e.g. Ctrl+Option+Space or F13">
+        <p style="font-size:11px;color:#555;margin-top:4px;">Electron accelerator format. Save &amp; restart to apply. Try <strong>F13</strong> for a single-key option.</p>
+      </div>
+    </div>
+
+    <!-- Hold mode: key capture -->
+    <div class="field" id="field-holdkey" style="display:none;align-items:flex-start">
+      <label style="padding-top:8px">Hold Key</label>
+      <div class="field-input">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+          <div id="hold-key-display" style="
+            background:#2c2c36;border:1px solid rgba(255,255,255,0.10);
+            border-radius:8px;padding:7px 12px;font-size:13px;color:#e0e0e0;
+            min-width:160px;flex:1;
+          ">Not set</div>
+          <button id="btn-learn" class="btn btn-secondary" onclick="startLearn()">Press a Key…</button>
+          <button id="btn-cancel-learn" class="btn btn-secondary" style="display:none" onclick="cancelLearn()">Cancel</button>
+        </div>
+        <p id="learn-hint" style="font-size:11px;color:#666">Click “Press a Key…” then press the key you want to hold while dictating.</p>
+        <div id="fn-hint" style="font-size:11px;color:#888;background:rgba(255,200,0,0.07);border:1px solid rgba(255,200,0,0.15);border-radius:6px;padding:8px 10px;margin-top:8px;display:none">
+          ⚠️  <strong>Using Fn / Globe?</strong> First go to <strong>System Settings → Keyboard → Press Globe key to → Do Nothing</strong>, then press the key above.
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Auto-paste</label>
+      <div class="field-input toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="autoPaste">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Paste text at cursor automatically (requires Accessibility permission)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save -->
+  <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+    <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+    <button class="btn btn-secondary" onclick="window.close()">Close</button>
+    <span id="save-status"></span>
+  </div>
+
+</div>
+<script src="settings.js"></script>
+</body>
+</html>

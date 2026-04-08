@@ -1,0 +1,62 @@
+{
+  "name": "dictation-ai",
+  "version": "0.1.0",
+  "description": "AI-powered dictation for macOS \u2014 Wispr Flow / Willow alternative",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac",
+    "build:arm": "electron-builder --mac --arm64",
+    "build:x64": "electron-builder --mac --x64",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "openai": "^4.52.0",
+    "uiohook-napi": "^1.5.4"
+  },
+  "devDependencies": {
+    "electron": "^31.4.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.dictation-ai.app",
+    "productName": "Dictation AI",
+    "copyright": "Copyright \u00a9 2026",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "services/**/*",
+      "assets/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.icns",
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Dictation AI needs microphone access to record your voice.",
+        "NSAppleEventsUsageDescription": "Dictation AI uses AppleScript to paste text at your cursor.",
+        "com.apple.security.automation.apple-events": true
+      }
+    },
+    "dmg": {
+      "title": "Dictation AI",
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    }
+  }
+}
