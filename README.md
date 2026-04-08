@@ -1,16 +1,16 @@
 # 🎙 Dictation AI
 
-> A free, open-source macOS dictation app — a [Wispr Flow](https://wisprflow.ai) / Willow alternative you actually own.
+> AI-powered voice dictation for macOS. Hold a key, speak, and your words appear at the cursor — cleaned up and ready to use.
 
-Hold a key → speak → text appears at your cursor. Powered by Whisper (via [Groq](https://console.groq.com)) for transcription and [xAI Grok](https://console.x.ai) for smart cleanup. Runs as a lightweight menu bar app with no Dock icon.
+Powered by [Groq Whisper](https://console.groq.com) for fast transcription and [xAI Grok](https://console.x.ai) for intelligent text cleanup. Runs as a lightweight menu bar app with no Dock icon.
 
-**Cost:** ~$0.20/month at heavy usage vs $144/year for Wispr Flow.
+**Cost:** ~$0.20/month at heavy usage (free on Groq's free tier for light use).
 
 ---
 
 ## Features
 
-- **Hold-to-talk or toggle mode** — hold a key while speaking, release to transcribe (just like Willow/Wispr Flow)
+- **Hold-to-talk or toggle mode** — hold a key while speaking, release to transcribe
 - **Live transcript preview** — see text appear as you speak
 - **AI cleanup** — Grok removes filler words, fixes punctuation, formats text
 - **Auto-paste** — text lands at your cursor automatically
@@ -30,7 +30,7 @@ bash setup.sh
 npm start
 ```
 
-That's it. Settings opens automatically on first launch.
+Settings opens automatically on first launch.
 
 ---
 
@@ -41,10 +41,10 @@ You need **at minimum one transcription key**. The xAI key is optional but recom
 | Service | Used for | Cost | Get key |
 |---------|----------|------|---------|
 | [Groq](https://console.groq.com) | Speech → text (Whisper large-v3-turbo) | Free tier, then ~$0.0005/min | Free signup |
-| [OpenAI](https://platform.openai.com) | Speech → text (Whisper v2), alternative | ~$0.006/min | Pay-as-you-go |
+| [OpenAI](https://platform.openai.com) | Speech → text (Whisper), alternative | ~$0.006/min | Pay-as-you-go |
 | [xAI](https://console.x.ai) | Text cleanup via Grok | Per token (very cheap) | Account required |
 
-Enter keys in **Settings** (click the mic icon in menu bar → Settings, or click the ⚙ in the pill).
+Enter keys in **Settings** — click the mic icon in menu bar, or the ⚙ gear in the floating pill.
 
 ---
 
@@ -64,9 +64,9 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibil
 ## Hotkey Setup
 
 ### Toggle mode (default)
-Press your hotkey once to start, once to stop. Configure any [Electron accelerator](https://www.electronjs.org/docs/latest/api/accelerator) string — e.g. `F13`, `Ctrl+Option+Space`.
+Press your hotkey once to start, once to stop. Configure any [Electron accelerator](https://www.electronjs.org/docs/latest/api/accelerator) — e.g. `F13`, `Ctrl+Option+Space`.
 
-### Hold-to-talk mode (like Willow)
+### Hold-to-talk mode
 1. Settings → Recording Mode → **Hold to talk**
 2. Click **Press a Key…** and press the key you want to hold
 3. Save Settings
@@ -84,7 +84,7 @@ bash assets/make-icns.sh   # one-time: generate icon.icns
 npm run build              # outputs universal arm64+x64 .dmg to /dist
 ```
 
-Open the `.dmg`, drag to `/Applications`. Right-click → Open if macOS blocks it (Gatekeeper).  
+Open the `.dmg`, drag to `/Applications`. Right-click → Open if macOS blocks it.  
 Add to **System Settings → General → Login Items** to auto-start.
 
 ---
@@ -103,10 +103,10 @@ assets/               App icons + tray icons
 ```
 
 **Recording pipeline:**
-1. `webkitSpeechRecognition` → live text preview as you speak (Apple's engine, on-device)  
-2. `MediaRecorder` → captures full audio for Whisper (higher accuracy final result)  
-3. Whisper API → transcription  
-4. Grok API → cleanup (skipped for ≤5 words, saving ~500ms)  
+1. `webkitSpeechRecognition` → live text preview as you speak (on-device)
+2. `MediaRecorder` → captures full audio for Whisper (higher accuracy final result)
+3. Whisper API → transcription
+4. Grok API → cleanup (skipped for ≤5 words, saving ~500ms)
 5. Clipboard + AppleScript → paste at cursor
 
 ---
@@ -128,7 +128,6 @@ exec('powershell -command "Add-Type -AssemblyName System.Windows.Forms; [System.
 |-------|-------------|-----------------|-------|
 | Light (5 min/day) | ~$0.00 (free tier) | ~$0.01 | ~$0.01/mo |
 | Heavy (30 min/day) | ~$0.05 | ~$0.15 | ~$0.20/mo |
-| Wispr Flow | — | — | $12.00/mo |
 
 ---
 

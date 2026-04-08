@@ -1,7 +1,7 @@
 {
   "name": "dictation-ai",
   "version": "0.1.0",
-  "description": "AI-powered dictation for macOS \u2014 Wispr Flow / Willow alternative",
+  "description": "AI-powered dictation app for macOS \u2014 Groq Whisper + xAI Grok",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
